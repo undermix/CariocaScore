@@ -116,29 +116,33 @@ function ConfettiOverlay({ winnerName, colors: themeColors, fs, onDismiss }: { w
 
   return (
     <TouchableWithoutFeedback onPress={onDismiss}>
-      <View style={confettiStyles.overlay}>
+      <View style={[confettiStyles.overlay, { backgroundColor: themeColors.overlay || 'rgba(0,0,0,0.6)' }]}>
         {confettiPieces.map((p) => (
           <ConfettiPiece key={p.id} delay={p.delay} color={p.color} startX={p.startX} />
         ))}
-        <Animated.View style={[confettiStyles.banner, { 
+        <Animated.View style={{ 
           opacity: opacityAnim, 
           transform: [{ scale: scaleAnim }],
-          backgroundColor: themeColors.card,
-          borderColor: themeColors.gold + '60',
-        }]}>
-          <Text style={{ fontSize: 48 }}>🏆</Text>
-          <Text style={[confettiStyles.congratsText, { color: themeColors.gold }]}>
-            ¡Felicidades!
-          </Text>
-          <Text style={[confettiStyles.winnerText, { color: themeColors.text, fontSize: fs(fontSize.xxl) }]}>
-            {winnerName}
-          </Text>
-          <Text style={[confettiStyles.subtitleText, { color: themeColors.textSecondary, fontSize: fs(fontSize.md) }]}>
-            ha ganado la partida
-          </Text>
-          <Text style={[confettiStyles.tapText, { color: themeColors.textMuted, fontSize: fs(fontSize.xs) }]}>
-            Toca para cerrar
-          </Text>
+          zIndex: 1000,
+        }}>
+          <View style={[confettiStyles.banner, { 
+            backgroundColor: themeColors.card, 
+            borderColor: themeColors.gold,
+          }]}>
+            <Ionicons name="trophy" size={54} color={themeColors.gold} style={{ marginBottom: 6 }} />
+            <Text style={[confettiStyles.congratsText, { color: themeColors.gold }]}>
+              ¡Felicidades!
+            </Text>
+            <Text style={[confettiStyles.winnerText, { color: themeColors.text, fontSize: fs(fontSize.xxl) }]}>
+              {winnerName}
+            </Text>
+            <Text style={[confettiStyles.subtitleText, { color: themeColors.textSecondary, fontSize: fs(fontSize.md) }]}>
+              ha ganado la partida
+            </Text>
+            <Text style={[confettiStyles.tapText, { color: themeColors.textMuted, fontSize: fs(fontSize.xs) }]}>
+              Toca para cerrar
+            </Text>
+          </View>
         </Animated.View>
       </View>
     </TouchableWithoutFeedback>
