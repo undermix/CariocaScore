@@ -28,7 +28,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              from: "Carioca Score <onboarding@resend.dev>",
+              from: "Carioca Score <no-reply@cariocascore.makersapps.com>",
               to: [email],
               subject: "Código de recuperación de contraseña",
               html: `
