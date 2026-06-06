@@ -44,6 +44,8 @@ const [currentPassword, setCurrentPassword] = useState('');
 const [newPassword, setNewPassword] = useState('');
 const [confirmPassword, setConfirmPassword] = useState('');
 const [changingPassword, setChangingPassword] = useState(false);
+const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+const [showAboutModal, setShowAboutModal] = useState(false);
 
 useEffect(() => {
   if (!signingOut) return;
@@ -239,6 +241,21 @@ fontSize: fs(fontSize.xs),
 <Row icon="log-out" label={signingOut ? "Cerrando sesión..." : "Cerrar sesión"} onPress={signingOut ? undefined : handleSignOut} danger />
 </Section>
 
+{/* Footer Links */}
+<View style={styles.footerLinks}>
+  <TouchableOpacity onPress={() => setShowPrivacyModal(true)}>
+    <Text style={[styles.footerLinkText, { color: colors.primary, fontSize: fs(fontSize.sm) }]}>
+      Política de Privacidad
+    </Text>
+  </TouchableOpacity>
+  <Text style={[styles.footerLinkSeparator, { color: colors.textMuted }]}>|</Text>
+  <TouchableOpacity onPress={() => setShowAboutModal(true)}>
+    <Text style={[styles.footerLinkText, { color: colors.primary, fontSize: fs(fontSize.sm) }]}>
+      Acerca de
+    </Text>
+  </TouchableOpacity>
+</View>
+
 {signingOut && (
 <View style={styles.signingOutOverlay}>
   <ActivityIndicator size="small" color={colors.danger} />
@@ -406,6 +423,113 @@ fontSize: fs(fontSize.xs),
     </View>
   </View>
 </Modal>
+
+{/* Privacy Policy Modal */}
+<Modal visible={showPrivacyModal} animationType="slide" transparent>
+  <View style={styles.modalOverlay}>
+    <View style={[styles.modalContent, { backgroundColor: colors.card, borderColor: colors.cardBorder, maxHeight: '80%' }]}>
+      <View style={styles.modalHeader}>
+        <Text style={[styles.modalTitle, { color: colors.text, fontSize: fs(fontSize.xl) }]}>
+          Política de Privacidad
+        </Text>
+        <TouchableOpacity onPress={() => setShowPrivacyModal(false)}>
+          <Ionicons name="close" size={24} color={colors.textMuted} />
+        </TouchableOpacity>
+      </View>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.modalScroll}>
+        <Text style={[styles.policySubtitle, { color: colors.textSecondary, fontSize: fs(fontSize.xs) }]}>
+          Última actualización: Junio 2026
+        </Text>
+        <Text style={[styles.policyHeading, { color: colors.text, fontSize: fs(fontSize.md) }]}>
+          1. Introducción
+        </Text>
+        <Text style={[styles.policyBody, { color: colors.textSecondary, fontSize: fs(fontSize.sm) }]}>
+          Bienvenido a Carioca Score. Al utilizar nuestra aplicación móvil y este sitio web, aceptas cumplir con los siguientes términos y condiciones de uso.
+        </Text>
+        
+        <Text style={[styles.policyHeading, { color: colors.text, fontSize: fs(fontSize.md) }]}>
+          2. Almacenamiento de Datos y Privacidad
+        </Text>
+        <Text style={[styles.policyBody, { color: colors.textSecondary, fontSize: fs(fontSize.sm) }]}>
+          Carioca Score utiliza un modelo híbrido para guardar tus partidas y perfiles de juego de la siguiente manera:{"\n\n"}
+          • Datos Locales: La app almacena las partidas en curso y el historial offline en tu dispositivo usando el almacenamiento seguro local (AsyncStorage/SecureStore).{"\n\n"}
+          • Datos en la Nube (Convex): Para la sincronización online, el ranking mundial y la lista de amigos, tus datos de perfil (nombre, país) y victorias se sincronizan de forma segura con los servidores de Convex. No recopilamos información personal sin tu consentimiento.
+        </Text>
+        
+        <Text style={[styles.policyHeading, { color: colors.text, fontSize: fs(fontSize.md) }]}>
+          3. Cuentas de Usuario y Credenciales
+        </Text>
+        <Text style={[styles.policyBody, { color: colors.textSecondary, fontSize: fs(fontSize.sm) }]}>
+          Eres responsable de proteger las credenciales de tu cuenta (contraseña). Para tu comodidad, permitimos el inicio de sesión con Google y el restablecimiento de contraseñas mediante códigos de verificación de un solo uso (OTP) enviados a tu correo electrónico registrado.
+        </Text>
+        
+        <Text style={[styles.policyHeading, { color: colors.text, fontSize: fs(fontSize.md) }]}>
+          4. Uso Aceptable del Ranking
+        </Text>
+        <Text style={[styles.policyBody, { color: colors.textSecondary, fontSize: fs(fontSize.sm) }]}>
+          El ranking mundial está diseñado para ser competitivo, divertido y justo. Queda prohibida la manipulación de datos, inyección de códigos o sincronización artificial de partidas falsas con el fin de alterar las puntuaciones del ranking.
+        </Text>
+        
+        <Text style={[styles.policyHeading, { color: colors.text, fontSize: fs(fontSize.md) }]}>
+          5. Cambios en las Políticas
+        </Text>
+        <Text style={[styles.policyBody, { color: colors.textSecondary, fontSize: fs(fontSize.sm) }]}>
+          Nos reservamos el derecho de modificar estas políticas en cualquier momento. El uso continuado de la app constituye la aceptación de los nuevos términos y condiciones.
+        </Text>
+      </ScrollView>
+      <TouchableOpacity
+        style={[styles.modalButton, { backgroundColor: colors.primary, marginTop: spacing.md }]}
+        onPress={() => setShowPrivacyModal(false)}
+      >
+        <Text style={[styles.modalButtonText, { fontSize: fs(fontSize.md) }]}>
+          Volver
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
+{/* About Modal */}
+<Modal visible={showAboutModal} animationType="slide" transparent>
+  <View style={styles.modalOverlay}>
+    <View style={[styles.modalContent, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+      <View style={styles.modalHeader}>
+        <Text style={[styles.modalTitle, { color: colors.text, fontSize: fs(fontSize.xl) }]}>
+          Acerca de
+        </Text>
+        <TouchableOpacity onPress={() => setShowAboutModal(false)}>
+          <Ionicons name="close" size={24} color={colors.textMuted} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.aboutContent}>
+        <Ionicons name="information-circle" size={48} color={colors.primary} style={{ alignSelf: 'center', marginBottom: spacing.xs }} />
+        <Text style={[styles.aboutTitle, { color: colors.text, fontSize: fs(fontSize.lg) }]}>
+          Carioca Score
+        </Text>
+        <Text style={[styles.aboutText, { color: colors.textSecondary, fontSize: fs(fontSize.md) }]}>
+          Desarrollado por:{"\n"}
+          <Text style={{ fontWeight: 'bold', color: colors.text }}>MakersApps SPA</Text>
+        </Text>
+        <Text style={[styles.aboutText, { color: colors.textSecondary, fontSize: fs(fontSize.md), marginTop: spacing.sm }]}>
+          Versión de la app:{"\n"}
+          <Text style={{ fontWeight: 'bold', color: colors.text }}>1.0.0</Text>
+        </Text>
+        <Text style={[styles.aboutText, { color: colors.textSecondary, fontSize: fs(fontSize.md), marginTop: spacing.sm }]}>
+          Correo de Soporte:{"\n"}
+          <Text style={{ fontWeight: 'bold', color: colors.text }}>makersapps.com@gmail.com</Text>
+        </Text>
+      </View>
+      <TouchableOpacity
+        style={[styles.modalButton, { backgroundColor: colors.primary, marginTop: spacing.xl }]}
+        onPress={() => setShowAboutModal(false)}
+      >
+        <Text style={[styles.modalButtonText, { fontSize: fs(fontSize.md) }]}>
+          Volver
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
 </SafeAreaView>
 );
 }
@@ -520,5 +644,51 @@ modalButton: {
 modalButtonText: {
   color: '#FFF',
   fontWeight: '700',
+},
+modalScroll: {
+  marginTop: spacing.md,
+  marginBottom: spacing.md,
+},
+policySubtitle: {
+  marginBottom: spacing.md,
+  fontStyle: 'italic',
+},
+policyHeading: {
+  fontWeight: '700',
+  marginTop: spacing.md,
+  marginBottom: spacing.xs,
+},
+policyBody: {
+  lineHeight: 20,
+  marginBottom: spacing.sm,
+},
+aboutContent: {
+  alignItems: 'center',
+  gap: spacing.md,
+  marginVertical: spacing.md,
+},
+aboutTitle: {
+  fontWeight: '800',
+  textAlign: 'center',
+  marginBottom: spacing.sm,
+},
+aboutText: {
+  textAlign: 'center',
+  lineHeight: 20,
+},
+footerLinks: {
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginTop: spacing.lg,
+  marginBottom: spacing.xxl,
+  gap: spacing.md,
+},
+footerLinkText: {
+  fontWeight: '600',
+  textDecorationLine: 'underline',
+},
+footerLinkSeparator: {
+  fontSize: fontSize.sm,
 },
 });
