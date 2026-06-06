@@ -500,28 +500,28 @@ userCountryCache[userIdStr] = "";
 if (args.country && ownerCountry !== args.country) continue;
 
 for (const player of game.players) {
-// Use linkedUserId's country if available
-let playerCountry = ownerCountry;
-if (player.linkedUserId) {
-const linkedIdStr = player.linkedUserId as string;
-if (userCountryCache[linkedIdStr] !== undefined) {
-playerCountry = userCountryCache[linkedIdStr];
-} else {
-try {
-const linkedUser = await ctx.db.get(player.linkedUserId);
-playerCountry = (linkedUser as any)?.country || ownerCountry;
-userCountryCache[linkedIdStr] = playerCountry;
-} catch {
-userCountryCache[linkedIdStr] = ownerCountry;
-}
-}
-// If filtering by country and this linked user doesn't match, skip
-if (args.country && playerCountry !== args.country) continue;
-}
+  // Only count registered players (with a linkedUserId) in the global leaderboard
+  if (!player.linkedUserId) continue;
 
-const key = player.linkedUserId
-? (player.linkedUserId as string)
-: player.name.trim().toLowerCase();
+  // Use linkedUserId's country if available
+  let playerCountry = ownerCountry;
+  const linkedIdStr = player.linkedUserId as string;
+  if (userCountryCache[linkedIdStr] !== undefined) {
+    playerCountry = userCountryCache[linkedIdStr];
+  } else {
+    try {
+      const linkedUser = await ctx.db.get(player.linkedUserId);
+      playerCountry = (linkedUser as any)?.country || ownerCountry;
+      userCountryCache[linkedIdStr] = playerCountry;
+    } catch {
+      userCountryCache[linkedIdStr] = ownerCountry;
+    }
+  }
+  
+  // If filtering by country and this linked user doesn't match, skip
+  if (args.country && playerCountry !== args.country) continue;
+
+  const key = player.linkedUserId as string;
 
 if (!playerMap[key]) {
 playerMap[key] = {
