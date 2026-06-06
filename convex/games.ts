@@ -467,135 +467,93 @@ handler: async (ctx, args) => {
       .order("desc")
       .take(500);
 
-const userCountryCache: Record<string, string> = {};
-
-const playerMap: Record<string, {
-wins: number;
-gamesPlayed: number;
-totalScore: number;
-bestScore: number;
-country: string;
-}> = {};
-
-for (const game of completedGames) {
-if (game.players.length === 0) continue;
-
-const winner = game.players.reduce((min, p) =>
-p.totalScore < min.totalScore ? p : min, game.players[0]);
-
-let ownerCountry = "";
-const userIdStr = game.userId as string;
-if (userCountryCache[userIdStr] !== undefined) {
-ownerCountry = userCountryCache[userIdStr];
-} else {
-try {
-const user = await ctx.db.get(game.userId);
-ownerCountry = (user as any)?.country || "";
-userCountryCache[userIdStr] = ownerCountry;
-} catch {
-userCountryCache[userIdStr] = "";
-}
-}
-
-if (args.country && ownerCountry !== args.country) continue;
-
-for (const player of game.players) {
-  // Only count registered players (with a linkedUserId) in the global leaderboard
-  if (!player.linkedUserId) continue;
-
-  // Use linkedUserId's country if available
-  let playerCountry = ownerCountry;
-  const linkedIdStr = player.linkedUserId as string;
-  if (userCountryCache[linkedIdStr] !== undefined) {
-    playerCountry = userCountryCache[linkedIdStr];
-  } else {
-    try {
-      const linkedUser = await ctx.db.get(player.linkedUserId);
-      playerCountry = (linkedUser as any)?.country || ownerCountry;
-      userCountryCache[linkedIdStr] = playerCountry;
-    } catch {
-      userCountryCache[linkedIdStr] = ownerCountry;
+    // 1. Gather all unique user IDs involved (owners and players)
+    const uniqueUserIds = new Set<string>();
+    for (const game of completedGames) {
+      uniqueUserIds.add(game.userId as string);
+      for (const player of game.players) {
+        if (player.linkedUserId) {
+          uniqueUserIds.add(player.linkedUserId as string);
+        }
+      }
     }
-  }
-  
-  // If filtering by country and this linked user doesn't match, skip
-  if (args.country && playerCountry !== args.country) continue;
 
-  const key = player.linkedUserId as string;
+    // 2. Fetch all users in parallel
+    const userIdsArray = Array.from(uniqueUserIds);
+    const userDocs = await Promise.all(userIdsArray.map(id => ctx.db.get(id as any)));
+    const userMap = new Map<string, any>();
+    userIdsArray.forEach((id, idx) => {
+      if (userDocs[idx]) {
+        userMap.set(id, userDocs[idx]);
+      }
+    });
 
-if (!playerMap[key]) {
-playerMap[key] = {
-wins: 0,
-gamesPlayed: 0,
-totalScore: 0,
-bestScore: Infinity,
-country: playerCountry,
-};
-}
-playerMap[key].gamesPlayed++;
-playerMap[key].totalScore += player.totalScore;
-if (player.totalScore < playerMap[key].bestScore) {
-playerMap[key].bestScore = player.totalScore;
-}
-if (playerCountry) {
-playerMap[key].country = playerCountry;
-}
-if (player.id === winner.id) {
-playerMap[key].wins++;
-}
-}
-}
+    const playerMap: Record<string, {
+      wins: number;
+      gamesPlayed: number;
+      totalScore: number;
+      bestScore: number;
+      country: string;
+      displayName: string;
+    }> = {};
 
-const results: Array<{
-  playerName: string;
-  country: string;
-  totalWins: number;
-  totalGames: number;
-  averageScore: number;
-  bestScore: number;
-  totalScore: number;
-}> = [];
+    for (const game of completedGames) {
+      if (game.players.length === 0) continue;
 
-for (const [key, stats] of Object.entries(playerMap)) {
-// Find display name
-let displayName = key;
-for (const game of completedGames) {
-for (const player of game.players) {
-const playerKey = player.linkedUserId
-? (player.linkedUserId as string)
-: player.name.trim().toLowerCase();
-if (playerKey === key) {
-displayName = player.name.trim();
-}
-}
-}
+      const winner = game.players.reduce((min, p) =>
+        p.totalScore < min.totalScore ? p : min, game.players[0]);
 
-// If key is a user ID, try to get their account name
-if (key.length > 20) {
-try {
-const user = await ctx.db.get(key as any);
-if (user && (user as any).name) {
-displayName = (user as any).name;
-}
-} catch {
-// keep the player name from games
-}
-}
+      for (const player of game.players) {
+        // Only count registered players (with a linkedUserId) in the global leaderboard
+        if (!player.linkedUserId) continue;
 
-    results.push({
-      playerName: displayName,
-      country: stats.country,
+        const linkedIdStr = player.linkedUserId as string;
+        const linkedUser = userMap.get(linkedIdStr);
+        
+        // Retrieve player's country and name from their user account, fallback to host/player values
+        const hostUser = userMap.get(game.userId as string);
+        const playerCountry = linkedUser?.country || hostUser?.country || "";
+        const playerDisplayName = linkedUser?.name || player.name.trim();
+
+        // If filtering by country and this player's country doesn't match, skip
+        if (args.country && playerCountry !== args.country) continue;
+
+        if (!playerMap[linkedIdStr]) {
+          playerMap[linkedIdStr] = {
+            wins: 0,
+            gamesPlayed: 0,
+            totalScore: 0,
+            bestScore: Infinity,
+            country: playerCountry,
+            displayName: playerDisplayName,
+          };
+        }
+        
+        const entry = playerMap[linkedIdStr];
+        entry.gamesPlayed++;
+        entry.totalScore += player.totalScore;
+        if (player.totalScore < entry.bestScore) {
+          entry.bestScore = player.totalScore;
+        }
+        if (player.id === winner.id) {
+          entry.wins++;
+        }
+      }
+    }
+
+    const results = Object.entries(playerMap).map(([userId, stats]) => ({
+      playerName: stats.displayName || "Jugador Anónimo",
+      country: stats.country || "",
       totalWins: stats.wins,
       totalGames: stats.gamesPlayed,
       averageScore: stats.gamesPlayed > 0 ? Math.round(stats.totalScore / stats.gamesPlayed) : 0,
       bestScore: stats.bestScore === Infinity ? 0 : stats.bestScore,
       totalScore: stats.totalScore,
-    });
-  }
+    }));
 
-  results.sort((a, b) => b.totalWins - a.totalWins || a.averageScore - b.averageScore);
-  return results.slice(0, 10);
-},
+    results.sort((a, b) => b.totalWins - a.totalWins || a.averageScore - b.averageScore);
+    return results.slice(0, 10);
+  },
 });
 
 export const updateUserCountry = mutation({
