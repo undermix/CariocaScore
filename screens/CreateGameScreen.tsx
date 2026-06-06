@@ -21,6 +21,7 @@ export default function CreateGameScreen({ navigation }: any) {
 const { colors, fs } = useTheme();
 const createGame = useMutation(api.games.createGame);
 const friends = useQuery(api.friends.listFriends, {});
+const userProfile = useQuery(api.games.getUserProfile, {});
 
 const [gameName, setGameName] = useState('');
 const [playerName, setPlayerName] = useState('');
@@ -29,6 +30,21 @@ const [selectedRounds, setSelectedRounds] = useState<typeof DEFAULT_ROUNDS>(DEFA
 const [useCustom, setUseCustom] = useState(false);
 const [customRoundName, setCustomRoundName] = useState('');
 const [showFriendsModal, setShowFriendsModal] = useState(false);
+
+const hasPrepopulated = React.useRef(false);
+
+React.useEffect(() => {
+  if (userProfile && !hasPrepopulated.current) {
+    setPlayers([
+      {
+        name: userProfile.name,
+        linkedUserId: userProfile._id,
+        isLinked: true,
+      },
+    ]);
+    hasPrepopulated.current = true;
+  }
+}, [userProfile]);
 
 const acceptedFriends = (friends || []).filter((f: any) => f.status === 'accepted');
 
