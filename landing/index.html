@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carioca Score - Tu Compañero de Juego</title>
+  <meta name="description" content="Lleva el control de tus partidas de Carioca de manera elegante y profesional. Soporte offline, ranking mundial y estadísticas en tiempo real.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <img src="assets/icon.png" alt="Carioca Score Logo" class="logo-img">
+        <span class="logo-text">Carioca<span class="gold-text">Score</span></span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#features">Características</a></li>
+        <li><a href="#rules">Reglas</a></li>
+        <li><a href="#calculator">Calculadora</a></li>
+        <li><a href="#ranking">Ranking</a></li>
+      </ul>
+      <a href="#download" class="btn btn-nav">Descargar App</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-bg-overlay"></div>
+    <div class="hero-cards-decoration">
+      <div class="floating-card card-1"><i class="fa-solid fa-diamond gold-text"></i></div>
+      <div class="floating-card card-2"><i class="fa-solid fa-heart danger-text"></i></div>
+      <div class="floating-card card-3"><i class="fa-solid fa-spade"></i></div>
+    </div>
+    <div class="container hero-container">
+      <div class="hero-content">
+        <div class="badge"><i class="fa-solid fa-crown gold-text"></i> Estilo Casino Clásico</div>
+        <h1>Lleva tus partidas de <span class="gold-gradient-text">Carioca</span> al siguiente nivel</h1>
+        <p class="hero-subtitle">La aplicación definitiva para contar puntos, seguir estadísticas y competir en el ranking latinoamericano. Diseñada para jugadores apasionados.</p>
+        <div class="hero-ctas">
+          <a href="#download" class="btn btn-primary"><i class="fa-brands fa-apple"></i> App Store</a>
+          <a href="#download" class="btn btn-primary"><i class="fa-brands fa-android"></i> Android APK</a>
+          <a href="#calculator" class="btn btn-secondary">Probar Calculadora</a>
+        </div>
+      </div>
+      
+      <!-- Interactive Phone Mockup -->
+      <div class="hero-mockup">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="app-header">
+              <i class="fa-solid fa-bars"></i>
+              <span>Carioca Score</span>
+              <i class="fa-solid fa-circle-user"></i>
+            </div>
+            
+            <div class="app-content-preview">
+              <div class="app-card active-game-card">
+                <div class="card-title-row">
+                  <span class="game-tag">Ronda 3 de 10</span>
+                  <span class="game-status"><span class="status-dot"></span> En juego</span>
+                </div>
+                <h3>Mesa de los Sábados</h3>
+                <div class="player-mini-list">
+                  <div class="player-mini-row">
+                    <span class="player-mini-name">🏆 Nicolás</span>
+                    <span class="player-mini-score gold-text">15 pts</span>
+                  </div>
+                  <div class="player-mini-row">
+                    <span class="player-mini-name">Sofía</span>
+                    <span class="player-mini-score">45 pts</span>
+                  </div>
+                  <div class="player-mini-row">
+                    <span class="player-mini-name">Mateo</span>
+                    <span class="player-mini-score">75 pts</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="app-card ranking-mini-card">
+                <h4>Ranking del Mes 🌎</h4>
+                <div class="ranking-mini-list">
+                  <div class="rank-mini-item first">
+                    <span class="rank-num">1</span>
+                    <span class="flag">🇨🇱</span>
+                    <span class="name">Andrés L.</span>
+                    <span class="wins gold-text"><i class="fa-solid fa-trophy"></i> 24</span>
+                  </div>
+                  <div class="rank-mini-item">
+                    <span class="rank-num">2</span>
+                    <span class="flag">🇦🇷</span>
+                    <span class="name">Martina G.</span>
+                    <span class="wins"><i class="fa-solid fa-trophy"></i> 18</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>Características <span class="gold-gradient-text">Premium</span></h2>
+        <p>Todo lo que necesitas para organizar tus noches de cartas y juegos familiares.</p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-wifi-slash"></i></div>
+          <h3>Soporte Offline Completo</h3>
+          <p>¿Sin señal en el campo o la playa? No te preocupes. Juega sin conexión y la app sincronizará tu puntaje automáticamente cuando recuperes señal.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-globe"></i></div>
+          <h3>Ranking Latinoamericano</h3>
+          <p>Configura tu país desde los Ajustes, sube tus victorias y compite para posicionar tu bandera nacional en el Top 10 Mundial de Carioca.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-sliders"></i></div>
+          <h3>Rondas Personalizadas</h3>
+          <p>Juega las 10 rondas tradicionales chilenas o crea tus propias combinaciones de Tríos y Escalas con reglas a tu medida.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <h3>Estadísticas Detalladas</h3>
+          <p>Sigue de cerca tu rendimiento: porcentaje de victorias, promedio de puntaje por ronda y tu historial de partidas completadas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rules Section -->
+  <section id="rules" class="rules-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Rondas del <span class="gold-gradient-text">Juego</span></h2>
+        <p>El carioca tradicional consta de 10 rondas. Haz clic en cualquiera de ellas para ver qué combinación de cartas necesitas.</p>
+      </div>
+
+      <div class="rules-container">
+        <div class="rounds-list">
+          <button class="round-btn active" data-round="1">Ronda 1: 2 Tríos</button>
+          <button class="round-btn" data-round="2">Ronda 2: 1 Trío y 1 Escala</button>
+          <button class="round-btn" data-round="3">Ronda 3: 2 Escalas</button>
+          <button class="round-btn" data-round="4">Ronda 4: 3 Tríos</button>
+          <button class="round-btn" data-round="5">Ronda 5: 2 Tríos y 1 Escala</button>
+          <button class="round-btn" data-round="6">Ronda 6: 1 Trío y 2 Escalas</button>
+          <button class="round-btn" data-round="7">Ronda 7: 3 Escalas</button>
+          <button class="round-btn" data-round="8">Ronda 8: 4 Tríos</button>
+          <button class="round-btn" data-round="9">Ronda 9: Escala Sucia</button>
+          <button class="round-btn" data-round="10">Ronda 10: Escala Real o Pintada</button>
+        </div>
+
+        <div class="round-display-card">
+          <div class="display-header">
+            <h3 id="display-round-title">Ronda 1: 2 Tríos</h3>
+            <span class="cards-badge" id="display-round-cards">6 cartas requeridas</span>
+          </div>
+          <p id="display-round-desc">Debes formar dos tríos (tres cartas del mismo número de cualquier pinta). Por ejemplo: tres 5 y tres Q.</p>
+          <div class="card-visuals" id="display-round-visuals">
+            <!-- Dynamic visuals inserted by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Calculator Section -->
+  <section id="calculator" class="calculator-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Calculadora de <span class="gold-gradient-text">Puntos</span></h2>
+        <p>Calcula de forma rápida los puntos que te quedaron en la mano al finalizar una ronda.</p>
+      </div>
+
+      <div class="calculator-grid">
+        <div class="calc-panel inputs">
+          <h3>Selecciona las cartas que tienes</h3>
+          
+          <div class="cards-selector-grid">
+            <div class="card-select-btn" data-points="2">
+              <span class="card-label">2</span>
+              <span class="card-pts">2 pts</span>
+            </div>
+            <div class="card-select-btn" data-points="3">
+              <span class="card-label">3</span>
+              <span class="card-pts">3 pts</span>
+            </div>
+            <div class="card-select-btn" data-points="4">
+              <span class="card-label">4</span>
+              <span class="card-pts">4 pts</span>
+            </div>
+            <div class="card-select-btn" data-points="5">
+              <span class="card-label">5</span>
+              <span class="card-pts">5 pts</span>
+            </div>
+            <div class="card-select-btn" data-points="6">
+              <span class="card-label">6</span>
+              <span class="card-pts">6 pts</span>
+            </div>
+            <div class="card-select-btn" data-points="7">
+              <span class="card-label">7</span>
+              <span class="card-pts">7 pts</span>
+            </div>
+            <div class="card-select-btn" data-points="8">
+              <span class="card-label">8</span>
+              <span class="card-pts">8 pts</span>
+            </div>
+            <div class="card-select-btn" data-points="9">
+              <span class="card-label">9</span>
+              <span class="card-pts">9 pts</span>
+            </div>
+            <div class="card-select-btn" data-points="10">
+              <span class="card-label">10 / J / Q / K</span>
+              <span class="card-pts">10 pts</span>
+            </div>
+            <div class="card-select-btn" data-points="15">
+              <span class="card-label">As (A)</span>
+              <span class="card-pts">15 pts</span>
+            </div>
+            <div class="card-select-btn" data-points="20">
+              <span class="card-label">Comodín (Joker)</span>
+              <span class="card-pts">20 pts</span>
+            </div>
+          </div>
+
+          <div class="calc-actions">
+            <button id="btn-clear-calc" class="btn btn-secondary btn-sm">Limpiar todo</button>
+          </div>
+        </div>
+
+        <div class="calc-panel result-panel">
+          <h3>Puntaje Acumulado</h3>
+          <div class="result-display">
+            <span id="calc-total-points">0</span>
+            <span class="pts-label">PUNTOS</span>
+          </div>
+          
+          <div class="selected-summary">
+            <h4>Cartas seleccionadas:</h4>
+            <ul id="selected-cards-list">
+              <li class="empty-list-msg">No has seleccionado ninguna carta aún.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section id="download" class="download-section">
+    <div class="download-bg-felt"></div>
+    <div class="container download-container">
+      <div class="download-content">
+        <h2>¿Listo para jugar como un profesional?</h2>
+        <p>Descarga **Carioca Score** hoy mismo y olvídate de buscar papel y lápiz. Disponible de forma gratuita para dispositivos móviles.</p>
+        <div class="download-buttons">
+          <a href="#" class="btn btn-primary btn-lg"><i class="fa-brands fa-apple"></i> Descargar para iOS</a>
+          <a href="#" class="btn btn-primary btn-lg"><i class="fa-brands fa-android"></i> Descargar para Android</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-logo">
+        <img src="assets/icon.png" alt="Carioca Score Logo" class="footer-logo-img">
+        <span>Carioca<span class="gold-text">Score</span></span>
+      </div>
+      <p class="copyright">&copy; 2026 Carioca Score. Todos los derechos reservados. Desarrollado por Makers Apps.</p>
+      <div class="social-icons">
+        <a href="#"><i class="fa-brands fa-github"></i></a>
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-solid fa-envelope"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Javascript -->
+  <script src="script.js"></script>
+</body>
+</html>
