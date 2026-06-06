@@ -458,10 +458,14 @@ totalWins: v.number(),
 totalGames: v.number(),
 averageScore: v.number(),
 bestScore: v.number(),
+totalScore: v.number(),
 })),
 handler: async (ctx, args) => {
-const allGames = await ctx.db.query("games").collect();
-const completedGames = allGames.filter((g) => g.status === "completed");
+    const completedGames = await ctx.db
+      .query("games")
+      .withIndex("by_status", (q) => q.eq("status", "completed"))
+      .order("desc")
+      .take(500);
 
 const userCountryCache: Record<string, string> = {};
 
@@ -543,12 +547,13 @@ playerMap[key].wins++;
 }
 
 const results: Array<{
-playerName: string;
-country: string;
-totalWins: number;
-totalGames: number;
-averageScore: number;
-bestScore: number;
+  playerName: string;
+  country: string;
+  totalWins: number;
+  totalGames: number;
+  averageScore: number;
+  bestScore: number;
+  totalScore: number;
 }> = [];
 
 for (const [key, stats] of Object.entries(playerMap)) {
@@ -577,18 +582,19 @@ displayName = (user as any).name;
 }
 }
 
-results.push({
-playerName: displayName,
-country: stats.country,
-totalWins: stats.wins,
-totalGames: stats.gamesPlayed,
-averageScore: stats.gamesPlayed > 0 ? Math.round(stats.totalScore / stats.gamesPlayed) : 0,
-bestScore: stats.bestScore === Infinity ? 0 : stats.bestScore,
-});
-}
+    results.push({
+      playerName: displayName,
+      country: stats.country,
+      totalWins: stats.wins,
+      totalGames: stats.gamesPlayed,
+      averageScore: stats.gamesPlayed > 0 ? Math.round(stats.totalScore / stats.gamesPlayed) : 0,
+      bestScore: stats.bestScore === Infinity ? 0 : stats.bestScore,
+      totalScore: stats.totalScore,
+    });
+  }
 
-results.sort((a, b) => b.totalWins - a.totalWins || a.averageScore - b.averageScore);
-return results.slice(0, 3);
+  results.sort((a, b) => b.totalWins - a.totalWins || a.averageScore - b.averageScore);
+  return results.slice(0, 10);
 },
 });
 
@@ -630,4 +636,64 @@ name: user.name || "",
 country: (user as any).country || "",
 };
 },
+});
+
+export const syncOfflineGame = mutation({
+  args: {
+    name: v.string(),
+    status: v.string(),
+    players: v.array(v.object({
+      name: v.string(),
+      scores: v.array(v.number()),
+      totalScore: v.number(),
+      linkedUserId: v.optional(v.id("users")),
+    })),
+    rounds: v.array(v.object({
+      id: v.string(),
+      name: v.string(),
+      completed: v.boolean(),
+    })),
+    currentRoundIndex: v.number(),
+    customRounds: v.optional(v.boolean()),
+    completedAt: v.optional(v.number()),
+  },
+  returns: v.id("games"),
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("No autenticado");
+
+    const players = args.players.map((p, i) => ({
+      id: `player_${i}_${Date.now()}`,
+      name: p.name,
+      scores: p.scores,
+      totalScore: p.totalScore,
+      linkedUserId: p.linkedUserId,
+    }));
+
+    const gameId = await ctx.db.insert("games", {
+      userId,
+      name: args.name,
+      status: args.status,
+      players,
+      rounds: args.rounds,
+      currentRoundIndex: args.currentRoundIndex,
+      customRounds: args.customRounds,
+      completedAt: args.completedAt,
+    });
+
+    await ctx.db.insert("gameParticipants", { gameId, userId });
+
+    const addedUserIds = new Set<string>([userId as string]);
+    for (const player of players) {
+      if (player.linkedUserId && !addedUserIds.has(player.linkedUserId as string)) {
+        await ctx.db.insert("gameParticipants", {
+          gameId,
+          userId: player.linkedUserId,
+        });
+        addedUserIds.add(player.linkedUserId as string);
+      }
+    }
+
+    return gameId;
+  },
 });

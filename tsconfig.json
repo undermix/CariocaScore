@@ -1,6 +1,11 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
-  }
+    "strict": true,
+    "moduleResolution": "Bundler"
+  },
+  "exclude": [
+    "node_modules",
+    "convex"
+  ]
 }

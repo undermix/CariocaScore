@@ -11,6 +11,7 @@ import { api } from '../convex/_generated/api';
 import { useTheme } from '../lib/ThemeContext';
 import { spacing, borderRadius, fontSize, DEFAULT_ROUNDS } from '../lib/theme';
 import { useKeepAwake } from 'expo-keep-awake';
+import { getLocalGame, saveLocalGame, getCachedOnlineGames } from '../lib/offlineStorage';
 import * as Haptics from 'expo-haptics';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
@@ -180,11 +181,17 @@ const confettiStyles = StyleSheet.create({
 export default function ActiveGameScreen({ route, navigation }: any) {
 const { gameId } = route.params;
 const { colors, fs } = useTheme();
-const game = useQuery(api.games.getGame, { gameId });
+
+const isLocal = gameId && gameId.startsWith('local_');
+
+const onlineGame = useQuery(api.games.getGame, isLocal ? (undefined as any) : { gameId });
 const updateScores = useMutation(api.games.updateScores);
 const addPlayerMut = useMutation(api.games.addPlayer);
 const removePlayerMut = useMutation(api.games.removePlayer);
 const editPlayerMut = useMutation(api.games.editPlayerName);
+
+const [localGame, setLocalGame] = useState<any>(null);
+const [cachedGame, setCachedGame] = useState<any>(null);
 
 const [showScoreModal, setShowScoreModal] = useState(false);
 const [editingRoundIndex, setEditingRoundIndex] = useState(-1);
@@ -194,6 +201,31 @@ const [newPlayerName, setNewPlayerName] = useState('');
 const [showConfetti, setShowConfetti] = useState(false);
 const [prevStatus, setPrevStatus] = useState<string | null>(null);
 const viewShotRef = useRef<View>(null);
+
+// Cargar partida local desde AsyncStorage
+useEffect(() => {
+  if (isLocal) {
+    getLocalGame(gameId).then((g) => {
+      if (g) setLocalGame(g);
+    });
+  }
+}, [gameId, isLocal]);
+
+// Cargar partida online cacheada como respaldo si no hay señal
+useEffect(() => {
+  if (!isLocal) {
+    if (onlineGame) {
+      setCachedGame(null);
+    } else {
+      getCachedOnlineGames().then((list) => {
+        const found = list.find((g) => g._id === gameId);
+        if (found) setCachedGame(found);
+      });
+    }
+  }
+}, [onlineGame, gameId, isLocal]);
+
+const game = isLocal ? localGame : (onlineGame || cachedGame);
 
 const shareScore = async () => {
 try {
@@ -243,12 +275,12 @@ const isOwner = game.isOwner !== false;
 const dealerIndex = game.currentRoundIndex % game.players.length;
 const dealerName = game.players[dealerIndex]?.name;
 const currentRoundObj = game.rounds[game.currentRoundIndex];
-const defaultRoundInfo = DEFAULT_ROUNDS.find((r) => r.name === currentRoundObj?.name);
+const defaultRoundInfo = DEFAULT_ROUNDS.find((r: any) => r.name === currentRoundObj?.name);
 const numberOfCards = defaultRoundInfo ? defaultRoundInfo.cards : null;
 
 const openScoreEntry = (roundIndex: number) => {
 const inputs: Record<string, string> = {};
-game.players.forEach((p) => {
+game.players.forEach((p: any) => {
 inputs[p.id] = p.scores[roundIndex] !== 0 ? p.scores[roundIndex].toString() : '';
 });
 setScoreInputs(inputs);
@@ -257,44 +289,129 @@ setShowScoreModal(true);
 };
 
 const saveScores = async () => {
-const scores = game.players.map((p) => ({
-playerId: p.id,
-score: parseInt(scoreInputs[p.id] || '0', 10) || 0,
-}));
-try {
-LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-await updateScores({ gameId, roundIndex: editingRoundIndex, scores });
-await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-setShowScoreModal(false);
-} catch (e) {
-Alert.alert('Error', 'No se pudieron guardar los puntajes');
-}
+  const scores = game.players.map((p: any) => ({
+    playerId: p.id,
+    score: parseInt(scoreInputs[p.id] || '0', 10) || 0,
+  }));
+
+  if (isLocal) {
+    try {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      const updatedPlayers = game.players.map((player: any) => {
+        const scoreEntry = scores.find((s: any) => s.playerId === player.id);
+        if (scoreEntry) {
+          const newScores = [...player.scores];
+          newScores[editingRoundIndex] = scoreEntry.score;
+          const totalScore = newScores.reduce((sum: number, s: number) => sum + s, 0);
+          return { ...player, scores: newScores, totalScore };
+        }
+        return player;
+      });
+
+      const rounds = [...game.rounds];
+      rounds[editingRoundIndex] = { ...rounds[editingRoundIndex], completed: true };
+
+      const nextIncomplete = rounds.findIndex((r: any) => !r.completed);
+      const currentRoundIndex = nextIncomplete === -1 ? rounds.length - 1 : nextIncomplete;
+      const allCompleted = rounds.every((r: any) => r.completed);
+
+      const updatedGame = {
+        ...game,
+        players: updatedPlayers,
+        rounds,
+        currentRoundIndex,
+        status: allCompleted ? 'completed' : 'active',
+        completedAt: allCompleted ? Date.now() : undefined,
+      };
+
+      await saveLocalGame(updatedGame);
+      setLocalGame(updatedGame);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setShowScoreModal(false);
+    } catch (e) {
+      Alert.alert('Error', 'No se pudieron guardar los puntajes localmente.');
+    }
+  } else {
+    try {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      await updateScores({ gameId, roundIndex: editingRoundIndex, scores });
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setShowScoreModal(false);
+    } catch (e) {
+      Alert.alert('Error', 'No se pudieron guardar los puntajes en el servidor. Asegúrate de tener conexión.');
+    }
+  }
 };
 
 const handleAddPlayer = async () => {
-const trimmed = newPlayerName.trim();
-if (!trimmed) return;
-try {
-await addPlayerMut({ gameId, playerName: trimmed });
-setNewPlayerName('');
-setShowAddPlayer(false);
-} catch (e) {
-Alert.alert('Error', 'No se pudo agregar el jugador');
-}
+  const trimmed = newPlayerName.trim();
+  if (!trimmed) return;
+
+  if (isLocal) {
+    try {
+      const newPlayer = {
+        id: `player_${game.players.length}_${Date.now()}`,
+        name: trimmed,
+        scores: new Array(game.rounds.length).fill(0),
+        totalScore: 0,
+      };
+      const updatedGame = {
+        ...game,
+        players: [...game.players, newPlayer],
+      };
+      await saveLocalGame(updatedGame);
+      setLocalGame(updatedGame);
+      setNewPlayerName('');
+      setShowAddPlayer(false);
+    } catch (e) {
+      Alert.alert('Error', 'No se pudo agregar el jugador localmente');
+    }
+  } else {
+    try {
+      await addPlayerMut({ gameId, playerName: trimmed });
+      setNewPlayerName('');
+      setShowAddPlayer(false);
+    } catch (e) {
+      Alert.alert('Error', 'No se pudo agregar el jugador');
+    }
+  }
 };
 
 const handleRemovePlayer = (playerId: string, name: string) => {
-Alert.alert('Eliminar jugador', `¿Eliminar a ${name}?`, [
-{ text: 'Cancelar', style: 'cancel' },
-{ text: 'Eliminar', style: 'destructive', onPress: () => removePlayerMut({ gameId, playerId }) },
-]);
+  Alert.alert('Eliminar jugador', `¿Eliminar a ${name}?`, [
+    { text: 'Cancelar', style: 'cancel' },
+    {
+      text: 'Eliminar',
+      style: 'destructive',
+      onPress: async () => {
+        if (isLocal) {
+          try {
+            const updatedGame = {
+              ...game,
+              players: game.players.filter((p: any) => p.id !== playerId),
+            };
+            await saveLocalGame(updatedGame);
+            setLocalGame(updatedGame);
+          } catch (e) {
+            Alert.alert('Error', 'No se pudo eliminar al jugador');
+          }
+        } else {
+          try {
+            await removePlayerMut({ gameId, playerId });
+          } catch (e) {
+            Alert.alert('Error', 'No se pudo eliminar el jugador de la nube');
+          }
+        }
+      }
+    },
+  ]);
 };
 
 const getMedalIcon = (index: number) => {
-    if (index === 0) return { name: 'trophy', color: '#FFD700' };
-    if (index === 1) return { name: 'medal', color: '#C0C0C0' };
-    if (index === 2) return { name: 'medal', color: '#CD7F32' };
-    return { name: 'close-circle', color: colors.danger };
+    if (index === 0) return { name: 'trophy' as const, color: '#FFD700' };
+    if (index === 1) return { name: 'medal' as const, color: '#C0C0C0' };
+    if (index === 2) return { name: 'medal' as const, color: '#CD7F32' };
+    return { name: 'close-circle' as const, color: colors.danger };
   };
 
 return (
@@ -334,7 +451,7 @@ Ronda {game.currentRoundIndex + 1} de {game.rounds.length}
 <Text style={[styles.winnerCardTitle, { color: colors.text, fontSize: fs(fontSize.xl) }]}>¡Victoria en Carioca!</Text>
 <Text style={[styles.winnerCardSubtitle, { color: colors.textSecondary, fontSize: fs(fontSize.sm), marginBottom: spacing.lg }]}>{game.name}</Text>
 <View style={[styles.winnerRankingContainer, { backgroundColor: colors.border }]}>
-{sortedPlayers.slice(0, 3).map((player, idx) => (
+{sortedPlayers.slice(0, 3).map((player: any, idx: number) => (
 <View key={player.id} style={styles.winnerRankingRow}>
 <Text style={[styles.winnerRankingName, { color: idx === 0 ? colors.gold : colors.text, fontSize: fs(idx === 0 ? fontSize.lg : fontSize.md) }]}>
 {idx + 1}. {player.name}
@@ -391,7 +508,7 @@ Esperando puntajes del creador...
 
 {/* Rankings */}
 <Text style={[styles.sectionTitle, { color: colors.text, fontSize: fs(fontSize.md) }]}>Ranking</Text>
-{sortedPlayers.map((player, index) => {
+{sortedPlayers.map((player: any, index: number) => {
 const medal = getMedalIcon(index);
 const isLast = index === sortedPlayers.length - 1 && sortedPlayers.length > 1;
 return (
@@ -438,7 +555,7 @@ Detalle por Rondas
 <View style={[styles.tableHeaderCell, styles.roundCell]}>
 <Text style={[styles.tableHeaderText, { color: colors.textSecondary, fontSize: fs(fontSize.xs) }]}>Ronda</Text>
 </View>
-{game.players.map((p) => (
+{game.players.map((p: any) => (
 <View key={p.id} style={styles.tableHeaderCell}>
 <Text style={[styles.tableHeaderText, { color: colors.textSecondary, fontSize: fs(fontSize.xs) }]} numberOfLines={1}>
 {p.name}
@@ -447,7 +564,7 @@ Detalle por Rondas
 ))}
 </View>
 {/* Table rows */}
-{game.rounds.map((round, ri) => (
+{game.rounds.map((round: any, ri: number) => (
 <TouchableOpacity
 key={round.id}
 style={[
@@ -493,7 +610,7 @@ fontSize: fs(fontSize.xs),
 </Text>
 </View>
 </View>
-{game.players.map((p) => (
+{game.players.map((p: any) => (
 <View key={p.id} style={styles.tableCell}>
 <Text style={[styles.scoreCellText, {
 color: p.scores[ri] === 0 ? colors.textMuted : colors.text,
@@ -510,7 +627,7 @@ fontSize: fs(fontSize.sm),
 <View style={[styles.tableCell, styles.roundCell]}>
 <Text style={[styles.tableTotalText, { color: colors.text, fontSize: fs(fontSize.sm) }]}>TOTAL</Text>
 </View>
-{game.players.map((p) => (
+{game.players.map((p: any) => (
 <View key={p.id} style={styles.tableCell}>
 <Text style={[styles.tableTotalText, { color: colors.text, fontSize: fs(fontSize.md) }]}>
 {p.totalScore}
@@ -543,7 +660,7 @@ fontSize: fs(fontSize.sm),
 Ingresa el puntaje de cada jugador
 </Text>
 <ScrollView style={styles.modalScroll} keyboardShouldPersistTaps="handled">
-{game.players.map((p, idx) => (
+{game.players.map((p: any, idx: number) => (
 <View key={p.id} style={[styles.scoreInputRow, { borderBottomColor: colors.border }]}>
 <Text style={[styles.scoreInputLabel, { color: colors.text, fontSize: fs(fontSize.md) }]}>
 {p.name}

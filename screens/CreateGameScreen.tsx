@@ -9,6 +9,7 @@ import { useMutation, useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { useTheme } from '../lib/ThemeContext';
 import { spacing, borderRadius, fontSize, DEFAULT_ROUNDS } from '../lib/theme';
+import { saveLocalGame } from '../lib/offlineStorage';
 
 type PlayerEntry = {
 name: string;
@@ -66,7 +67,7 @@ setPlayers(players.filter((_, i) => i !== index));
 const addCustomRound = () => {
 const trimmed = customRoundName.trim();
 if (!trimmed) return;
-setSelectedRounds([...selectedRounds, { id: `custom_${Date.now()}`, name: trimmed }]);
+setSelectedRounds([...selectedRounds, { id: `custom_${Date.now()}`, name: trimmed, cards: 0 }]);
 setCustomRoundName('');
 };
 
@@ -100,7 +101,40 @@ customRounds: useCustom,
 });
 navigation.replace('ActiveGame', { gameId });
 } catch (e) {
-Alert.alert('Error', 'No se pudo crear la partida');
+console.log('[CREATE GAME] Error creating game in Convex:', e);
+Alert.alert(
+  'Modo Sin Conexión',
+  'No se pudo conectar con el servidor. ¿Deseas crear la partida localmente en tu dispositivo? Se sincronizará cuando vuelvas a tener señal.',
+  [
+    { text: 'Cancelar', style: 'cancel' },
+    {
+      text: 'Crear Local',
+      onPress: async () => {
+        const localGameId = `local_${Date.now()}`;
+        const localGame = {
+          _id: localGameId,
+          _creationTime: Date.now(),
+          name: gameName.trim(),
+          status: 'active',
+          userId: 'local_user',
+          isLocal: true,
+          players: players.map((p, i) => ({
+            id: `player_${i}_${Date.now()}`,
+            name: p.name,
+            scores: new Array(selectedRounds.length).fill(0),
+            totalScore: 0,
+            linkedUserId: p.linkedUserId,
+          })),
+          rounds: selectedRounds.map((r) => ({ id: r.id, name: r.name, completed: false })),
+          currentRoundIndex: 0,
+          customRounds: useCustom,
+        };
+        await saveLocalGame(localGame);
+        navigation.replace('ActiveGame', { gameId: localGameId });
+      }
+    }
+  ]
+);
 }
 };
 

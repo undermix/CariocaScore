@@ -11,30 +11,7 @@ import { api } from '../convex/_generated/api';
 import { useTheme } from '../lib/ThemeContext';
 import { spacing, borderRadius, fontSize } from '../lib/theme';
 
-const COUNTRIES = [
-{ code: 'AR', flag: '🇦🇷', name: 'Argentina' },
-{ code: 'BO', flag: '🇧🇴', name: 'Bolivia' },
-{ code: 'BR', flag: '🇧🇷', name: 'Brasil' },
-{ code: 'CL', flag: '🇨🇱', name: 'Chile' },
-{ code: 'CO', flag: '🇨🇴', name: 'Colombia' },
-{ code: 'CR', flag: '🇨🇷', name: 'Costa Rica' },
-{ code: 'CU', flag: '🇨🇺', name: 'Cuba' },
-{ code: 'DO', flag: '🇩🇴', name: 'Rep. Dominicana' },
-{ code: 'EC', flag: '🇪🇨', name: 'Ecuador' },
-{ code: 'SV', flag: '🇸🇻', name: 'El Salvador' },
-{ code: 'GT', flag: '🇬🇹', name: 'Guatemala' },
-{ code: 'HN', flag: '🇭🇳', name: 'Honduras' },
-{ code: 'MX', flag: '🇲🇽', name: 'México' },
-{ code: 'NI', flag: '🇳🇮', name: 'Nicaragua' },
-{ code: 'PA', flag: '🇵🇦', name: 'Panamá' },
-{ code: 'PY', flag: '🇵🇾', name: 'Paraguay' },
-{ code: 'PE', flag: '🇵🇪', name: 'Perú' },
-{ code: 'PR', flag: '🇵🇷', name: 'Puerto Rico' },
-{ code: 'UY', flag: '🇺🇾', name: 'Uruguay' },
-{ code: 'VE', flag: '🇻🇪', name: 'Venezuela' },
-{ code: 'ES', flag: '🇪🇸', name: 'España' },
-{ code: 'US', flag: '🇺🇸', name: 'Estados Unidos' },
-];
+import { COUNTRIES } from '../lib/countries';
 
 function getFlagRenderer(code: string | null | undefined, size: number = 20) {
   if (!code || code === '🌍') {
@@ -286,7 +263,7 @@ return (
 {player.playerName}
 </Text>
 <Text style={[{ color: colors.textSecondary, fontSize: fs(fontSize.xs) }]}>
-Prom: {player.averageScore} pts
+Pts Totales: {player.totalScore} | Prom: {player.averageScore} pts
 </Text>
 </View>
 <View style={styles.rankRight}>

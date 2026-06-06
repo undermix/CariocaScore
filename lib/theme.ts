@@ -149,7 +149,7 @@ xxxl: 30,
 display: 36,
 };
 
-export const DEFAULT_ROUNDS: Round[] = [
+export const DEFAULT_ROUNDS = [
   { id: '1', name: '2 Tríos', cards: 6 },
   { id: '2', name: '1 Trío y 1 Escala', cards: 7 },
   { id: '3', name: '2 Escalas', cards: 8 },

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
 View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking, Platform,
-ActivityIndicator, Modal, TextInput,
+ActivityIndicator, Modal, TextInput, FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,8 @@ import { api } from '../convex/_generated/api';
 import * as StoreReview from 'expo-store-review';
 import { useTheme } from '../lib/ThemeContext';
 import { ThemeMode, spacing, borderRadius, fontSize } from '../lib/theme';
+import CountryFlag from 'react-native-country-flag';
+import { COUNTRIES } from '../lib/countries';
 
 const themes: { id: ThemeMode; label: string; icon: string; desc: string }[] = [
 { id: 'light', label: 'Claro', icon: 'sunny', desc: 'Fondo blanco, letras oscuras' },
@@ -30,10 +32,12 @@ const { signOut } = useAuthActions();
 const changePasswordAction = useAction(api.users.changePassword);
 const userProfile = useQuery(api.games.getUserProfile, {});
 const updateUserName = useMutation(api.games.updateUserName);
+const updateUserCountry = useMutation(api.games.updateUserCountry);
 const { colors, mode, fontScale, setMode, setFontScale, fs } = useTheme();
 const [signingOut, setSigningOut] = useState(false);
 const [showPasswordModal, setShowPasswordModal] = useState(false);
 const [showNameModal, setShowNameModal] = useState(false);
+const [showCountryModal, setShowCountryModal] = useState(false);
 const [editName, setEditName] = useState('');
 const [savingName, setSavingName] = useState(false);
 const [currentPassword, setCurrentPassword] = useState('');
@@ -230,6 +234,7 @@ fontSize: fs(fontSize.xs),
   setEditName(userProfile?.name || '');
   setShowNameModal(true);
 }} />
+<Row icon="globe-outline" label="País" value={userProfile?.country ? (COUNTRIES.find(c => c.code === userProfile.country)?.name || userProfile.country) : 'Seleccionar país'} onPress={() => setShowCountryModal(true)} />
 <Row icon="key" label="Cambiar contraseña" onPress={() => setShowPasswordModal(true)} />
 <Row icon="log-out" label={signingOut ? "Cerrando sesión..." : "Cerrar sesión"} onPress={signingOut ? undefined : handleSignOut} danger />
 </Section>
@@ -358,6 +363,46 @@ fontSize: fs(fontSize.xs),
           </Text>
         )}
       </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
+{/* Select Country Modal */}
+<Modal visible={showCountryModal} animationType="slide" transparent>
+  <View style={styles.modalOverlay}>
+    <View style={[styles.modalContent, { backgroundColor: colors.card, borderColor: colors.cardBorder, maxHeight: '80%' }]}>
+      <View style={styles.modalHeader}>
+        <Text style={[styles.modalTitle, { color: colors.text, fontSize: fs(fontSize.xl) }]}>
+          Seleccionar País
+        </Text>
+        <TouchableOpacity onPress={() => setShowCountryModal(false)}>
+          <Ionicons name="close" size={24} color={colors.textMuted} />
+        </TouchableOpacity>
+      </View>
+      <FlatList
+        data={COUNTRIES}
+        keyExtractor={(item) => item.code}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.row, { borderBottomColor: colors.border }]}
+            onPress={async () => {
+              try {
+                await updateUserCountry({ country: item.code });
+                setShowCountryModal(false);
+              } catch (e) {
+                console.error("Failed to update country:", e);
+                Alert.alert('Error', 'No se pudo actualizar el país.');
+              }
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+              <CountryFlag isoCode={item.code} size={20} style={{ borderRadius: 4 }} />
+              <Text style={[{ color: colors.text, fontSize: fs(fontSize.md) }]}>{item.name}</Text>
+            </View>
+            {userProfile?.country === item.code && <Ionicons name="checkmark-circle" size={22} color={colors.primary} />}
+          </TouchableOpacity>
+        )}
+      />
     </View>
   </View>
 </Modal>

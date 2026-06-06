@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 View, Text, TouchableOpacity, StyleSheet, FlatList, Alert,
 } from 'react-native';
@@ -8,28 +8,84 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { useTheme } from '../lib/ThemeContext';
 import { spacing, borderRadius, fontSize } from '../lib/theme';
+import {
+  getLocalGames,
+  getCachedOnlineGames,
+  cacheOnlineGames,
+  syncOfflineGames,
+  deleteLocalGame,
+  LocalGame,
+} from '../lib/offlineStorage';
 
 export default function HomeScreen({ navigation }: any) {
 const { colors, fs } = useTheme();
 const games = useQuery(api.games.listGames, {});
 const deleteGame = useMutation(api.games.deleteGame);
+const syncOfflineGameMut = useMutation(api.games.syncOfflineGame);
 
-const activeGames = games?.filter((g: any) => g.status === 'active') || [];
-const completedGames = games?.filter((g: any) => g.status === 'completed') || [];
+const [localGames, setLocalGames] = useState<LocalGame[]>([]);
+const [cachedOnlineGames, setCachedOnlineGames] = useState<any[]>([]);
 
-const handleDelete = (gameId: any, name: string) => {
-Alert.alert(
-'Eliminar partida',
-`¿Estás seguro de eliminar "${name}"?`,
-[
-{ text: 'Cancelar', style: 'cancel' },
-{
-text: 'Eliminar',
-style: 'destructive',
-onPress: () => deleteGame({ gameId }),
-},
-]
-);
+// Cargar partidas locales y cachés al montar la pantalla o cuando recibe el foco
+useEffect(() => {
+  const unsubscribe = navigation.addListener('focus', () => {
+    getLocalGames().then(setLocalGames);
+    getCachedOnlineGames().then(setCachedOnlineGames);
+  });
+  
+  getLocalGames().then(setLocalGames);
+  getCachedOnlineGames().then(setCachedOnlineGames);
+
+  return unsubscribe;
+}, [navigation]);
+
+// Cachear partidas online cuando se cargan correctamente y disparar sincronización
+useEffect(() => {
+  if (games !== undefined) {
+    cacheOnlineGames(games);
+    if (localGames.length > 0) {
+      syncOfflineGames(syncOfflineGameMut).then((count) => {
+        if (count > 0) {
+          getLocalGames().then(setLocalGames);
+        }
+      });
+    }
+  }
+}, [games, localGames.length]);
+
+// Determinar el listado de partidas a mostrar
+const onlineSource = games !== undefined ? games : cachedOnlineGames;
+const combinedGames = [...localGames, ...onlineSource];
+
+// Clasificar por estado (ordenados por creación descendente)
+const sortedCombined = [...combinedGames].sort((a: any, b: any) => b._creationTime - a._creationTime);
+const activeGames = sortedCombined.filter((g: any) => g.status === 'active') || [];
+const completedGames = sortedCombined.filter((g: any) => g.status === 'completed') || [];
+
+const handleDelete = (gameId: any, name: string, isLocal?: boolean) => {
+  Alert.alert(
+    'Eliminar partida',
+    `¿Estás seguro de eliminar "${name}"?`,
+    [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Eliminar',
+        style: 'destructive',
+        onPress: async () => {
+          if (isLocal) {
+            await deleteLocalGame(gameId);
+            getLocalGames().then(setLocalGames);
+          } else {
+            try {
+              await deleteGame({ gameId });
+            } catch (e) {
+              Alert.alert('Sin conexión', 'No se pudo eliminar la partida de la nube. Intenta de nuevo con señal.');
+            }
+          }
+        },
+      },
+    ]
+  );
 };
 
 const renderGame = ({ item }: any) => {
@@ -53,7 +109,13 @@ activeOpacity={0.7}
 <Text style={[styles.gameName, { color: colors.text, fontSize: fs(fontSize.lg) }]} numberOfLines={1}>
 {item.name}
 </Text>
-{!isOwner && (
+{item.isLocal && (
+  <View style={[styles.invitedBadge, { backgroundColor: colors.warning + '20' }]}>
+    <Ionicons name="cloud-offline" size={10} color={colors.warning} />
+    <Text style={{ color: colors.warning, fontSize: fs(fontSize.xs - 2), fontWeight: '600' }}>Local</Text>
+  </View>
+)}
+{!isOwner && !item.isLocal && (
   <View style={[styles.invitedBadge, { backgroundColor: colors.primary + '20' }]}>
     <Ionicons name="people" size={10} color={colors.primary} />
     <Text style={{ color: colors.primary, fontSize: fs(fontSize.xs - 2), fontWeight: '600' }}>Invitado</Text>
@@ -111,10 +173,10 @@ onPress={() => navigation.navigate('ActiveGame', { gameId: item._id })}
 {isActive ? 'Continuar' : 'Ver'}
 </Text>
 </TouchableOpacity>
-{isOwner && (
+{(isOwner || item.isLocal) && (
 <TouchableOpacity
 style={[styles.actionBtn, { backgroundColor: colors.danger + '15' }]}
-onPress={() => handleDelete(item._id, item.name)}
+onPress={() => handleDelete(item._id, item.name, item.isLocal)}
 >
 <Ionicons name="trash-outline" size={16} color={colors.danger} />
 </TouchableOpacity>
