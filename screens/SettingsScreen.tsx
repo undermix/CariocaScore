@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
 View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking, Platform,
-ActivityIndicator, Modal, TextInput, FlatList,
+ActivityIndicator, Modal, TextInput, FlatList, Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -502,7 +502,7 @@ fontSize: fs(fontSize.xs),
         </TouchableOpacity>
       </View>
       <View style={styles.aboutContent}>
-        <Ionicons name="information-circle" size={48} color={colors.primary} style={{ alignSelf: 'center', marginBottom: spacing.xs }} />
+        <Image source={require('../assets/icon.png')} style={styles.aboutLogo} />
         <Text style={[styles.aboutTitle, { color: colors.text, fontSize: fs(fontSize.lg) }]}>
           Carioca Score
         </Text>
@@ -666,6 +666,13 @@ aboutContent: {
   alignItems: 'center',
   gap: spacing.md,
   marginVertical: spacing.md,
+},
+aboutLogo: {
+  width: 80,
+  height: 80,
+  borderRadius: 16,
+  alignSelf: 'center',
+  marginBottom: spacing.xs,
 },
 aboutTitle: {
   fontWeight: '800',
