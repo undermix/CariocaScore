@@ -71,6 +71,10 @@ if (step === 'resetVerification') {
     Alert.alert('Error', 'Por favor ingresa correo, código de recuperación y nueva contraseña');
     return;
   }
+  if (password.length < 8) {
+    Alert.alert('Error', 'La nueva contraseña debe tener al menos 8 caracteres');
+    return;
+  }
   setLoading(true);
   try {
     await signIn('password', {
@@ -96,6 +100,10 @@ return;
 if (step === 'signUp' && !name.trim()) {
 Alert.alert('Error', 'Por favor ingresa tu nombre');
 return;
+}
+if (step === 'signUp' && password.length < 8) {
+  Alert.alert('Error', 'La contraseña debe tener al menos 8 caracteres');
+  return;
 }
 setLoading(true);
 console.log('[AUTH] handleAuth starting:', step);
