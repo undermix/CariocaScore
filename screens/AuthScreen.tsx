@@ -76,7 +76,7 @@ if (step === 'resetVerification') {
     await signIn('password', {
       email: email.trim(),
       code: code.trim(),
-      newPassword: password,
+      password: password,
       flow: 'reset-verification',
     });
     Alert.alert('Listo', 'Contraseña restablecida y sesión iniciada correctamente.');
