@@ -623,6 +623,7 @@ return null;
 export const getUserProfile = query({
 args: {},
 returns: v.union(v.object({
+_id: v.id("users"),
 name: v.string(),
 country: v.string(),
 }), v.null()),
@@ -632,6 +633,7 @@ if (!userId) return null;
 const user = await ctx.db.get(userId);
 if (!user) return null;
 return {
+_id: user._id,
 name: user.name || "",
 country: (user as any).country || "",
 };
@@ -697,3 +699,4 @@ export const syncOfflineGame = mutation({
     return gameId;
   },
 });
+

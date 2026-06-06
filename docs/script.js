@@ -423,12 +423,15 @@ async function initLiveRanking() {
   if (!tableBody) return;
 
   try {
-    const response = await fetch('https://fine-raven-418.convex.cloud/api/query/games/getGlobalStats', {
+    const response = await fetch('https://fine-raven-418.convex.cloud/api/query', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ args: {} })
+      body: JSON.stringify({
+        path: 'games:getGlobalStats',
+        args: {}
+      })
     });
 
     if (!response.ok) {
