@@ -31,6 +31,7 @@
         <li><a href="#rules">Reglas</a></li>
         <li><a href="#calculator">Calculadora</a></li>
         <li><a href="#ranking">Ranking</a></li>
+        <li><a href="#" id="nav-open-recovery" class="nav-recovery-btn">Recuperar Contraseña</a></li>
       </ul>
       <a href="#download" class="btn btn-nav">Descargar App</a>
     </div>
@@ -40,10 +41,78 @@
   <header class="hero">
     <div class="hero-bg-overlay"></div>
     <div class="hero-cards-decoration">
-      <div class="floating-card card-1"><i class="fa-solid fa-diamond gold-text"></i></div>
-      <div class="floating-card card-2"><i class="fa-solid fa-heart danger-text"></i></div>
-      <div class="floating-card card-3"><i class="fa-solid fa-spade"></i></div>
+      <!-- Card Texture Filters / Noise Overlay on felt is handled in CSS -->
+      
+      <!-- Real Card 1: As de Diamantes (Fondo Animado) -->
+      <div class="real-card card-1 red-suit">
+        <div class="card-linen-texture"></div>
+        <div class="card-inner-border">
+          <div class="card-corner top-left">
+            <span class="card-value">A</span>
+            <svg class="corner-suit" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2L2 12l10 10 10-10L12 2z"/></svg>
+          </div>
+          <div class="card-center">
+            <svg class="center-suit-large" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2L2 12l10 10 10-10L12 2z"/></svg>
+          </div>
+          <div class="card-corner bottom-right">
+            <span class="card-value">A</span>
+            <svg class="corner-suit" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2L2 12l10 10 10-10L12 2z"/></svg>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Real Card 2: K de Corazones (Fondo Animado con Corona) -->
+      <div class="real-card card-2 red-suit">
+        <div class="card-linen-texture"></div>
+        <div class="card-inner-border">
+          <div class="card-corner top-left">
+            <span class="card-value">K</span>
+            <svg class="corner-suit" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </div>
+          <div class="card-center face-card">
+            <i class="fa-solid fa-crown face-icon"></i>
+            <svg class="center-suit-medium" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </div>
+          <div class="card-corner bottom-right">
+            <span class="card-value">K</span>
+            <svg class="corner-suit" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real Card 3: Q de Espadas (Fondo Animado con Tiara) -->
+      <div class="real-card card-3 black-suit">
+        <div class="card-linen-texture"></div>
+        <div class="card-inner-border">
+          <div class="card-corner top-left">
+            <span class="card-value">Q</span>
+            <svg class="corner-suit" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C9 6.5 5 8.5 5 11c0 2.8 2.2 5 5 5s5-2.2 5-5c0-2.5-4-4.5-7-9z"/><path fill="currentColor" d="M12 14c-.6 0-1.1.4-1.3 1-.3 1-.7 2-1.7 2.5h6c-1-.5-1.4-1.5-1.7-2.5-.2-.6-.7-1-1.3-1z"/></svg>
+          </div>
+          <div class="card-center face-card">
+            <i class="fa-solid fa-gem face-icon"></i>
+            <svg class="center-suit-medium" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C9 6.5 5 8.5 5 11c0 2.8 2.2 5 5 5s5-2.2 5-5c0-2.5-4-4.5-7-9z"/><path fill="currentColor" d="M12 14c-.6 0-1.1.4-1.3 1-.3 1-.7 2-1.7 2.5h6c-1-.5-1.4-1.5-1.7-2.5-.2-.6-.7-1-1.3-1z"/></svg>
+          </div>
+          <div class="card-corner bottom-right">
+            <span class="card-value">Q</span>
+            <svg class="corner-suit" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C9 6.5 5 8.5 5 11c0 2.8 2.2 5 5 5s5-2.2 5-5c0-2.5-4-4.5-7-9z"/><path fill="currentColor" d="M12 14c-.6 0-1.1.4-1.3 1-.3 1-.7 2-1.7 2.5h6c-1-.5-1.4-1.5-1.7-2.5-.2-.6-.7-1-1.3-1z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real Card 4: Reverso de Carta de Casino Clásica (Fondo Animado) -->
+      <div class="real-card card-4 card-back">
+        <div class="card-linen-texture"></div>
+        <div class="card-back-pattern">
+          <div class="card-back-inner">
+            <div class="card-back-logo">
+              <i class="fa-solid fa-crown back-crown-icon"></i>
+              <span>C S</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
     <div class="container hero-container">
       <div class="hero-content">
         <div class="badge"><i class="fa-solid fa-crown gold-text"></i> Estilo Casino Clásico</div>
@@ -267,6 +336,99 @@
     </div>
   </section>
 
+  <!-- Global Ranking Section -->
+  <section id="ranking" class="ranking-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Ranking <span class="gold-gradient-text">Mundial</span></h2>
+        <p>Los 10 mejores jugadores de la temporada actual. ¡Completa partidas y compite por tu lugar!</p>
+      </div>
+      
+      <div class="ranking-table-card">
+        <div class="ranking-table-header">
+          <div class="col-rank">Pos</div>
+          <div class="col-flag">País</div>
+          <div class="col-name">Jugador</div>
+          <div class="col-wins gold-text">Partidas Ganadas</div>
+          <div class="col-score">Puntaje Total</div>
+        </div>
+        
+        <div class="ranking-table-body">
+          <div class="ranking-row top-1">
+            <div class="col-rank"><span class="medal-badge gold"><i class="fa-solid fa-trophy"></i> 1</span></div>
+            <div class="col-flag"><span class="flag-icon">🇨🇱</span></div>
+            <div class="col-name">Nicolás Aravena</div>
+            <div class="col-wins"><strong>48</strong> victorias</div>
+            <div class="col-score">720 pts</div>
+          </div>
+          <div class="ranking-row top-2">
+            <div class="col-rank"><span class="medal-badge silver">2</span></div>
+            <div class="col-flag"><span class="flag-icon">🇦🇷</span></div>
+            <div class="col-name">Sofía Castro</div>
+            <div class="col-wins"><strong>42</strong> victorias</div>
+            <div class="col-score">810 pts</div>
+          </div>
+          <div class="ranking-row top-3">
+            <div class="col-rank"><span class="medal-badge bronze">3</span></div>
+            <div class="col-flag"><span class="flag-icon">🇨🇱</span></div>
+            <div class="col-name">Sebastián Silva</div>
+            <div class="col-wins"><strong>39</strong> victorias</div>
+            <div class="col-score">940 pts</div>
+          </div>
+          <div class="ranking-row">
+            <div class="col-rank">4</div>
+            <div class="col-flag"><span class="flag-icon">🇲🇽</span></div>
+            <div class="col-name">Carlos Ruiz</div>
+            <div class="col-wins"><strong>35</strong> victorias</div>
+            <div class="col-score">990 pts</div>
+          </div>
+          <div class="ranking-row">
+            <div class="col-rank">5</div>
+            <div class="col-flag"><span class="flag-icon">🇨🇴</span></div>
+            <div class="col-name">Valentina M.</div>
+            <div class="col-wins"><strong>31</strong> victorias</div>
+            <div class="col-score">1,020 pts</div>
+          </div>
+          <div class="ranking-row">
+            <div class="col-rank">6</div>
+            <div class="col-flag"><span class="flag-icon">🇵🇪</span></div>
+            <div class="col-name">Diego López</div>
+            <div class="col-wins"><strong>28</strong> victorias</div>
+            <div class="col-score">1,120 pts</div>
+          </div>
+          <div class="ranking-row">
+            <div class="col-rank">7</div>
+            <div class="col-flag"><span class="flag-icon">🇺🇾</span></div>
+            <div class="col-name">Mateo Pintos</div>
+            <div class="col-wins"><strong>24</strong> victorias</div>
+            <div class="col-score">1,150 pts</div>
+          </div>
+          <div class="ranking-row">
+            <div class="col-rank">8</div>
+            <div class="col-flag"><span class="flag-icon">🇪🇨</span></div>
+            <div class="col-name">Emilia Santos</div>
+            <div class="col-wins"><strong>22</strong> victorias</div>
+            <div class="col-score">1,210 pts</div>
+          </div>
+          <div class="ranking-row">
+            <div class="col-rank">9</div>
+            <div class="col-flag"><span class="flag-icon">🇨🇷</span></div>
+            <div class="col-name">Daniel Rojas</div>
+            <div class="col-wins"><strong>19</strong> victorias</div>
+            <div class="col-score">1,300 pts</div>
+          </div>
+          <div class="ranking-row">
+            <div class="col-rank">10</div>
+            <div class="col-flag"><span class="flag-icon">🇻🇪</span></div>
+            <div class="col-name">Gabriela Toro</div>
+            <div class="col-wins"><strong>17</strong> victorias</div>
+            <div class="col-score">1,340 pts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Download Section -->
   <section id="download" class="download-section">
     <div class="download-bg-felt"></div>
@@ -289,14 +451,96 @@
         <img src="assets/icon.png" alt="Carioca Score Logo" class="footer-logo-img">
         <span>Carioca<span class="gold-text">Score</span></span>
       </div>
-      <p class="copyright">&copy; 2026 Carioca Score. Todos los derechos reservados. Desarrollado por Makers Apps.</p>
+      <div class="footer-center">
+        <p class="copyright">&copy; 2026 Carioca Score. Todos los derechos reservados.</p>
+        <div class="footer-links">
+          <a href="#" id="open-policies" class="policies-link">Términos y Políticas de Privacidad</a>
+          <span class="footer-link-separator">•</span>
+          <a href="#" id="open-recovery" class="policies-link">Recuperar Contraseña</a>
+        </div>
+      </div>
       <div class="social-icons">
-        <a href="#"><i class="fa-brands fa-github"></i></a>
+        <a href="https://github.com/undermix/CariocaScore"><i class="fa-brands fa-github"></i></a>
         <a href="#"><i class="fa-brands fa-twitter"></i></a>
         <a href="#"><i class="fa-solid fa-envelope"></i></a>
       </div>
     </div>
   </footer>
+
+  <!-- Policies Modal -->
+  <div id="policies-modal" class="modal-overlay-web">
+    <div class="modal-content-web">
+      <div class="modal-header-web">
+        <h2>Políticas de Privacidad y Términos de Uso</h2>
+        <button id="close-policies" class="close-btn-web">&times;</button>
+      </div>
+      <div class="modal-body-web">
+        <h3>1. Introducción</h3>
+        <p>Bienvenido a Carioca Score. Al utilizar nuestra aplicación móvil y este sitio web, aceptas cumplir con los siguientes términos y condiciones de uso.</p>
+        
+        <h3>2. Almacenamiento de Datos y Privacidad</h3>
+        <p>Carioca Score utiliza un modelo híbrido para guardar tus partidas y perfiles de juego de la siguiente manera:</p>
+        <ul>
+          <li><strong>Datos Locales:</strong> La app almacena las partidas en curso y el historial offline en tu dispositivo usando el almacenamiento seguro local (AsyncStorage/SecureStore).</li>
+          <li><strong>Datos en la Nube (Convex):</strong> Para la sincronización online, el ranking mundial y la lista de amigos, tus datos de perfil (nombre, país) y victorias se sincronizan de forma segura con los servidores de Convex. No recopilamos información personal sin tu consentimiento.</li>
+        </ul>
+        
+        <h3>3. Cuentas de Usuario y Credenciales</h3>
+        <p>Eres responsable de proteger las credenciales de tu cuenta (contraseña). Para tu comodidad, permitimos el inicio de sesión con Google y el restablecimiento de contraseñas mediante códigos de verificación de un solo uso (OTP) enviados a tu correo electrónico registrado.</p>
+        
+        <h3>4. Uso Aceptable del Ranking</h3>
+        <p>El ranking mundial está diseñado para ser competitivo, divertido y justo. Queda prohibida la manipulación de datos, inyección de códigos o sincronización artificial de partidas falsas con el fin de alterar las puntuaciones del ranking.</p>
+        
+        <h3>5. Cambios en las Políticas</h3>
+        <p>Nos reservamos el derecho de modificar estas políticas en cualquier momento. El uso continuado de la app constituye la aceptación de los nuevos términos y condiciones.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Password Recovery Modal -->
+  <div id="recovery-modal" class="modal-overlay-web">
+    <div class="modal-content-web">
+      <div class="modal-header-web">
+        <h2>Recuperar Contraseña</h2>
+        <button id="close-recovery" class="close-btn-web">&times;</button>
+      </div>
+      <div class="modal-body-web">
+        <h3>¿Cómo recuperar tu contraseña?</h3>
+        <p>Por razones de seguridad, el restablecimiento de contraseñas se realiza directamente dentro de la aplicación móvil de <strong>Carioca Score</strong> utilizando nuestro sistema de correo seguro con códigos de verificación (OTP).</p>
+        
+        <div class="instructions-steps">
+          <div class="step-item">
+            <span class="step-num">1</span>
+            <div class="step-content">
+              <h4>Abre la App</h4>
+              <p>Abre la aplicación <strong>Carioca Score</strong> en tu celular.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <span class="step-num">2</span>
+            <div class="step-content">
+              <h4>Solicita el Código</h4>
+              <p>En la pantalla de ingreso, haz clic en el enlace <strong>¿Olvidaste tu contraseña?</strong>.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <span class="step-num">3</span>
+            <div class="step-content">
+              <h4>Ingresa el OTP</h4>
+              <p>Ingresa tu correo y te enviaremos de inmediato un código de recuperación único (OTP). Ingrésalo en la aplicación junto con tu nueva contraseña.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="recovery-actions">
+          <a href="cariocascore://reset-password" class="btn btn-primary btn-block">
+            <i class="fa-solid fa-mobile-screen-button"></i> Abrir en la App
+          </a>
+          <p class="recovery-disclaimer">* Requiere tener la aplicación instalada en tu dispositivo móvil.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Javascript -->
   <script src="script.js"></script>

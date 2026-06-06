@@ -3,6 +3,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   initRoundsGuide();
   initScoreCalculator();
+  initPoliciesModal();
+  initRecoveryModal();
+  initLiveRanking();
 });
 
 // 1. Rounds Guide Data & Logic
@@ -68,7 +71,7 @@ const ROUNDS_DATA = {
   5: {
     title: 'Ronda 5: 2 Tríos y 1 Escala',
     cards: '10 cartas requeridas',
-    desc: 'Debes formar dos tríos y una escala. Requiere juntar 10 cartas combinando tres del mismo valor, otras tres del mismo valor y cuatro en secuencia.',
+    desc: 'Debes formar dos tríos y una escala. Requiere jugar 10 cartas combinando tres del mismo valor, otras tres del mismo valor y cuatro en secuencia.',
     visuals: [
       { value: '9', suit: '♥', color: 'red' },
       { value: '9', suit: '♦', color: 'red' },
@@ -199,7 +202,7 @@ function initRoundsGuide() {
     visualsEl.innerHTML = '';
     
     // Limits visible cards on mobile so it doesn't overflow, showing first 6-8
-    const maxVisible = window.innerWidth < 600 ? 6 : data.visuals.length;
+    const maxVisible = window.innerWidth < 600 ? 5 : data.visuals.length;
     
     data.visuals.slice(0, maxVisible).forEach(c => {
       const cardDiv = document.createElement('div');
@@ -322,4 +325,149 @@ function initScoreCalculator() {
     selectedCards = [];
     updateCalculator();
   });
+}
+
+// 3. Policies Modal Logic
+function initPoliciesModal() {
+  const modal = document.getElementById('policies-modal');
+  const openBtn = document.getElementById('open-policies');
+  const closeBtn = document.getElementById('close-policies');
+
+  if (openBtn && modal) {
+    openBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden'; // block page scrolling
+    });
+  }
+
+  if (closeBtn && modal) {
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('active');
+      document.body.style.overflow = ''; // restore scrolling
+    });
+  }
+
+  // Close modal when clicking outside contents on overlay
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  }
+}
+
+// 4. Password Recovery Modal Logic
+function initRecoveryModal() {
+  const modal = document.getElementById('recovery-modal');
+  const openFooterBtn = document.getElementById('open-recovery');
+  const openNavbarBtn = document.getElementById('nav-open-recovery');
+  const closeBtn = document.getElementById('close-recovery');
+
+  const openModal = (e) => {
+    e.preventDefault();
+    if (modal) {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  };
+
+  const closeModal = () => {
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  };
+
+  if (openFooterBtn) openFooterBtn.addEventListener('click', openModal);
+  if (openNavbarBtn) openNavbarBtn.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+  }
+}
+
+// 5. Live Ranking from Convex Integration
+const COUNTRY_FLAGS = {
+  'AR': '🇦🇷', 'BO': '🇧🇴', 'BR': '🇧🇷', 'CL': '🇨🇱', 'CO': '🇨🇴', 'CR': '🇨🇷',
+  'CU': '🇨🇺', 'DO': '🇩🇴', 'EC': '🇪🇨', 'SV': '🇸🇻', 'GT': '🇬🇹', 'HN': '🇭🇳',
+  'MX': '🇲🇽', 'NI': '🇳🇮', 'PA': '🇵🇦', 'PY': '🇵🇾', 'PE': '🇵🇪', 'PR': '🇵🇷',
+  'UY': '🇺🇾', 'VE': '🇻🇪', 'ES': '🇪🇸', 'US': '🇺🇸'
+};
+
+function getCountryFlag(code) {
+  if (!code) return '🌎';
+  const cleanCode = code.toUpperCase().trim();
+  return COUNTRY_FLAGS[cleanCode] || '🌎';
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+async function initLiveRanking() {
+  const tableBody = document.querySelector('.ranking-table-body');
+  if (!tableBody) return;
+
+  try {
+    const response = await fetch('https://fine-raven-418.convex.cloud/api/query/games/getGlobalStats', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ args: {} })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Status response: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const players = data.value;
+
+    if (players && Array.isArray(players) && players.length > 0) {
+      tableBody.innerHTML = '';
+      
+      players.slice(0, 10).forEach((player, idx) => {
+        const rank = idx + 1;
+        const row = document.createElement('div');
+        row.className = `ranking-row ${rank === 1 ? 'top-1' : rank === 2 ? 'top-2' : rank === 3 ? 'top-3' : ''}`;
+        
+        let medalHtml = rank;
+        if (rank === 1) medalHtml = `<span class="medal-badge gold"><i class="fa-solid fa-trophy"></i> 1</span>`;
+        else if (rank === 2) medalHtml = `<span class="medal-badge silver">2</span>`;
+        else if (rank === 3) medalHtml = `<span class="medal-badge bronze">3</span>`;
+        
+        const flag = getCountryFlag(player.country);
+        const name = player.playerName || 'Jugador Anónimo';
+        const wins = player.totalWins;
+        const score = player.totalScore;
+
+        row.innerHTML = `
+          <div class="col-rank">${medalHtml}</div>
+          <div class="col-flag"><span class="flag-icon">${flag}</span></div>
+          <div class="col-name">${escapeHtml(name)}</div>
+          <div class="col-wins"><strong>${wins}</strong> victorias</div>
+          <div class="col-score">${score.toLocaleString()} pts</div>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+  } catch (err) {
+    console.warn('[RANKING] No se pudo cargar el ranking en vivo desde Convex:', err);
+    // Keep fallback static HTML rows
+  }
 }
