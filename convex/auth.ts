@@ -53,4 +53,15 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
   ],
+  callbacks: {
+    async redirect({ redirectTo }) {
+      if (redirectTo.startsWith("cariocascore://")) {
+        return redirectTo;
+      }
+      if (redirectTo.startsWith("https://cariocascore.makersapps.com")) {
+        return redirectTo;
+      }
+      throw new Error(`Invalid redirectTo URI: ${redirectTo}`);
+    },
+  },
 });
