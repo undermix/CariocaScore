@@ -1,5 +1,12 @@
 # Changelog - Carioca Score
 
+## [1.0.2] - 2026-06-06
+
+### Corregido
+- **Conexión de Producción de Convex:** Se configuró el perfil de compilación de producción en `eas.json` y el archivo `.env` del repositorio para apuntar al servidor de producción real (`determined-cuttlefish-548`), solucionando el error de carga infinita de datos y el fallo de autenticación en la app nativa.
+- **Inicio de Sesión con Google (OAuth):** Se configuraron los Client IDs y Client Secrets en los servidores de desarrollo y producción de Convex, y se actualizaron los redireccionamientos autorizados en Google Cloud Console para resolver el error `401: invalid_client`.
+- **Incremento de Versión y Build:** Se incrementó la versión pública a `1.0.2` y el código de versión nativa (`versionCode` en Android y `buildNumber` en iOS) a `4` para permitir la publicación del hotfix de producción en Google Play.
+
 ## [1.0.1] - 2026-06-06
 
 ### Agregado

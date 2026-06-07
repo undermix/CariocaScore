@@ -227,7 +227,7 @@ fontSize: fs(fontSize.xs),
 <Section title="APLICACIÓN">
 <Row icon="star" label="Calificar app" onPress={handleRate} />
 <Row icon="heart" label="Apoyar desarrollo" onPress={() => navigation.navigate('Donations')} />
-<Row icon="information-circle" label="Versión" value="1.0.1" />
+<Row icon="information-circle" label="Versión" value="1.0.2" />
 </Section>
 
 {/* Account */}
@@ -512,7 +512,7 @@ fontSize: fs(fontSize.xs),
         </Text>
         <Text style={[styles.aboutText, { color: colors.textSecondary, fontSize: fs(fontSize.md), marginTop: spacing.sm }]}>
           Versión de la app:{"\n"}
-          <Text style={{ fontWeight: 'bold', color: colors.text }}>1.0.1</Text>
+          <Text style={{ fontWeight: 'bold', color: colors.text }}>1.0.2</Text>
         </Text>
         <Text style={[styles.aboutText, { color: colors.textSecondary, fontSize: fs(fontSize.md), marginTop: spacing.sm }]}>
           Correo de Soporte:{"\n"}
