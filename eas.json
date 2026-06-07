@@ -19,8 +19,8 @@
     },
     "production": {
       "env": {
-        "EXPO_PUBLIC_CONVEX_URL": "https://fine-raven-418.convex.cloud",
-        "EXPO_PUBLIC_CONVEX_SITE_URL": "https://fine-raven-418.convex.site"
+        "EXPO_PUBLIC_CONVEX_URL": "https://determined-cuttlefish-548.convex.cloud",
+        "EXPO_PUBLIC_CONVEX_SITE_URL": "https://determined-cuttlefish-548.convex.site"
       }
     }
   },
