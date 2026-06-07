@@ -11,9 +11,18 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_CONVEX_URL": "https://fine-raven-418.convex.cloud",
+        "EXPO_PUBLIC_CONVEX_SITE_URL": "https://fine-raven-418.convex.site"
       }
     },
-    "production": {}
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_CONVEX_URL": "https://fine-raven-418.convex.cloud",
+        "EXPO_PUBLIC_CONVEX_SITE_URL": "https://fine-raven-418.convex.site"
+      }
+    }
   },
   "submit": {
     "production": {}
